@@ -1,15 +1,20 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 type Tone = "success" | "warning" | "danger" | "neutral";
 
 export function SurfaceCard({
   children,
   className = "",
+  ...props
 }: {
   children: ReactNode;
   className?: string;
-}) {
-  return <div className={`surface-card ${className}`.trim()}>{children}</div>;
+} & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`surface-card ${className}`.trim()} {...props}>
+      {children}
+    </div>
+  );
 }
 
 export function SectionHeader({

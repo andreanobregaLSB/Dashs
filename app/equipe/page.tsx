@@ -1,4 +1,4 @@
-import {
+﻿import {
   SectionHeader,
   SurfaceCard,
   StatusBadge,
@@ -10,26 +10,26 @@ import { teamMembers } from "@/lib/mock-data";
 export default function EquipePage() {
   const summary = [
     { label: "Membros ativos", value: "12", delta: "+2 este mês" },
-    { label: "Capacidade alta", value: "4", delta: "atenção" },
+    { label: "Carga alta", value: "4", delta: "precisam apoio" },
     { label: "Entregas da semana", value: "18", delta: "+6 concluídas" },
-    { label: "Bloqueios", value: "3", delta: "-1 desde ontem" },
+    { label: "Bloqueios", value: "3", delta: "1 a menos" },
   ];
 
   return (
     <div className="page-stack">
-      <section className="page-hero">
+      <section className="page-hero page-hero--compact">
         <div>
           <p className="page-hero__eyebrow">Equipe</p>
-          <h1 className="page-hero__title">Responsáveis, carga e performance</h1>
+          <h1 className="page-hero__title">Carga, capacidade e performance</h1>
           <p className="page-hero__description">
-            Um mapa visual para acompanhar distribuição e capacidade.
+            Veja quem está equilibrado, quem precisa de ajuda e onde redistribuir trabalho.
           </p>
         </div>
-        <div className="page-hero__actions">
-          <button className="btn btn--secondary" type="button">
+        <div className="page-hero__actions page-hero__actions--minimal">
+          <button className="btn btn--secondary btn--sm" type="button">
             Ver capacidade
           </button>
-          <button className="btn btn--primary" type="button">
+          <button className="btn btn--primary btn--sm" type="button">
             Adicionar membro
           </button>
         </div>
@@ -50,11 +50,12 @@ export default function EquipePage() {
         <SectionHeader
           eyebrow="Mapa da equipe"
           title="Pessoas em foco"
-          description="Capacidade, tarefas ativas e eficiência por responsável."
+          description="Capacidade, tarefas ativas e desempenho por responsável."
         />
         <div className="grid grid-2">
           {teamMembers.map((member) => (
             <SurfaceCard key={member.name} className="member-card">
+              <div className={`tone-strip tone-strip--${member.tone}`} />
               <div className="member-card__top">
                 <div className="member-card__identity">
                   <div className="avatar avatar--lg">{member.initials}</div>

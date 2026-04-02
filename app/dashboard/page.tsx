@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   SectionHeader,
   StatCard,
@@ -17,7 +17,7 @@ export default function DashboardPage() {
           <p className="page-hero__eyebrow">Dashboard</p>
           <h1 className="page-hero__title">Visão executiva da operação</h1>
           <p className="page-hero__description">
-            Indicadores centrais, progresso dos projetos e ações prioritárias.
+            Um recorte curto para entender saúde, risco e próximos movimentos.
           </p>
         </div>
 
@@ -44,10 +44,11 @@ export default function DashboardPage() {
 
       <section className="grid grid-2-1">
         <SurfaceCard>
+          <div className="tone-strip" />
           <SectionHeader
             eyebrow="Projetos"
             title="Carteira ativa"
-            description="Acompanhe a saúde dos projetos prioritários."
+            description="Projeto, prazo e progresso sem ruído extra."
           />
           <div className="project-list">
             {projects.map((project) => (
@@ -68,10 +69,11 @@ export default function DashboardPage() {
         </SurfaceCard>
 
         <SurfaceCard>
+          <div className="tone-strip tone-strip--warning" />
           <SectionTitle
             eyebrow="Movimentações"
             title="Atividade recente"
-            description="Eventos recentes da operação."
+            description="Mudanças que valem uma ação agora."
           />
           <div className="activity-list">
             {recentActivity.map((item) => (

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   SectionHeader,
   StatCard,
@@ -19,23 +19,22 @@ import {
 export default function HomePage() {
   return (
     <div className="page-stack">
-      <section className="hero-panel">
+      <section className="hero-panel hero-panel--home">
         <div className="hero-panel__content">
           <div className="hero-panel__eyebrow">Central operacional</div>
           <h1 className="hero-panel__title">
-            Visualize prioridades, responsáveis e entregas em um só lugar.
+            Resolve pendências mais rápido, sem excesso de informação.
           </h1>
           <p className="hero-panel__description">
-            Uma visão executiva e operacional para acompanhar projetos, tarefas,
-            equipe e decisões com rapidez.
+            Um painel direto para ver prioridades, responsáveis e próximas ações em poucos segundos.
           </p>
 
           <div className="hero-panel__actions">
             <Link href="/tarefas" className="btn btn--primary">
-              Abrir tarefas
+              Começar por tarefas
             </Link>
-            <Link href="/projetos" className="btn btn--secondary">
-              Ver projetos
+            <Link href="/relatorios" className="btn btn--secondary">
+              Ver resumo executivo
             </Link>
           </div>
         </div>
@@ -44,8 +43,8 @@ export default function HomePage() {
           <SurfaceCard>
             <SectionTitle
               eyebrow="Resumo do momento"
-              title="Panorama do sistema"
-              description="Leitura rápida do que exige atenção agora."
+              title="O que pede atenção agora"
+              description="Menos leitura, mais decisão."
             />
             <div className="mini-grid">
               {executiveMetrics.slice(0, 4).map((item) => (
@@ -63,17 +62,22 @@ export default function HomePage() {
       <section className="section-block">
         <SectionHeader
           eyebrow="Radar do dia"
-          title="Alertas e pontos de decisão"
-          description="Tudo o que está perto do prazo, com risco ou esperando ação."
+          title="Alertas prioritários"
+          description="Os pontos que precisam de ação primeiro."
           action={
-            <Link href="/relatorios" className="btn btn--ghost">
-              Ver análise
+            <Link href="/tarefas" className="btn btn--ghost">
+              Abrir fila
             </Link>
           }
         />
         <div className="grid grid-4">
           {alerts.map((alert) => (
-            <SurfaceCard key={alert.title} className="alert-card">
+            <SurfaceCard
+              key={alert.title}
+              className="alert-card"
+              data-tone={alert.tone}
+            >
+              <div className={`tone-strip tone-strip--${alert.tone}`} />
               <div className="alert-card__top">
                 <StatusBadge tone={alert.tone}>{alert.status}</StatusBadge>
                 <span className="alert-card__count">{alert.count}</span>
@@ -88,13 +92,14 @@ export default function HomePage() {
       <section className="section-block">
         <SectionHeader
           eyebrow="Mapa do trabalho"
-          title="Áreas principais do sistema"
-          description="Módulos clicáveis para navegar pela operação."
+          title="Áreas principais"
+          description="Atalhos para entrar direto no que resolve cada pendência."
         />
         <div className="grid grid-4">
           {workAreas.map((area) => (
             <Link key={area.href} href={area.href} className="tile-link">
               <SurfaceCard className="tile-card">
+                <div className="tone-strip" />
                 <div className="tile-card__icon">{area.icon}</div>
                 <h3 className="card-title">{area.title}</h3>
                 <p className="card-description">{area.description}</p>
@@ -107,10 +112,11 @@ export default function HomePage() {
 
       <section className="grid grid-2-1">
         <SurfaceCard>
+          <div className="tone-strip tone-strip--warning" />
           <SectionTitle
             eyebrow="Painel vivo"
-            title="Atividade recente"
-            description="Últimas movimentações do time e dos projetos."
+            title="Últimas movimentações"
+            description="O que mudou recentemente no time e nos projetos."
           />
           <div className="activity-list">
             {recentActivity.map((item) => (
@@ -128,10 +134,11 @@ export default function HomePage() {
         </SurfaceCard>
 
         <SurfaceCard>
+          <div className="tone-strip" />
           <SectionTitle
             eyebrow="Linha de decisão"
-            title="Indicadores rápidos"
-            description="Sinais para tomada de decisão imediata."
+            title="Indicadores curtos"
+            description="Leitura rápida para decidir o próximo passo."
           />
           <div className="decision-list">
             {executiveMetrics.slice(4).map((item) => (
@@ -148,10 +155,11 @@ export default function HomePage() {
 
       <section className="grid grid-2">
         <SurfaceCard>
+          <div className="tone-strip tone-strip--success" />
           <SectionTitle
             eyebrow="Projetos em destaque"
-            title="Saúde dos projetos"
-            description="Status, progresso e líder responsável."
+            title="Saúde da carteira"
+            description="Status, progresso e responsável em uma única leitura."
           />
           <div className="project-list">
             {projects.slice(0, 3).map((project) => (
@@ -172,10 +180,11 @@ export default function HomePage() {
         </SurfaceCard>
 
         <SurfaceCard>
+          <div className="tone-strip tone-strip--danger" />
           <SectionTitle
             eyebrow="Equipe"
-            title="Responsáveis com maior carga"
-            description="Quem está puxando as entregas mais críticas."
+            title="Responsáveis em maior carga"
+            description="Quem está mais próximo do limite e precisa de apoio."
           />
           <div className="team-list">
             {teamMembers.slice(0, 4).map((member) => (

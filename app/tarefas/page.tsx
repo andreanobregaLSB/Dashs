@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import {
@@ -70,10 +70,9 @@ export default function TarefasPage() {
       <section className="page-hero page-hero--compact">
         <div>
           <p className="page-hero__eyebrow">Operação</p>
-          <h1 className="page-hero__title">Tarefas</h1>
+          <h1 className="page-hero__title">Fila de tarefas</h1>
           <p className="page-hero__description">
-            Acompanhe fluxo, responsáveis, criticidade, status e prazo em uma
-            visão operacional mais organizada.
+            Uma lista mais limpa para achar prioridade, dono e prazo sem abrir várias telas.
           </p>
         </div>
 
@@ -116,7 +115,7 @@ export default function TarefasPage() {
       <section className="section-block">
         <SectionHeader
           eyebrow="Filtros"
-          title="Refinar atividades"
+          title="Refinar a fila"
           description="Filtre por status, criticidade, responsável e prazo."
         />
 
@@ -221,45 +220,49 @@ export default function TarefasPage() {
 
       <section className="tasks-layout">
         <div className="tasks-list">
-          {filteredTasks.map((task) => (
-            <button
-              key={task.id}
-              type="button"
-              className={`unstyled-button ${selectedTask?.id === task.id ? "task-select--active" : ""}`}
-              onClick={() => setSelectedTaskId(task.id)}
-            >
-              <SurfaceCard className="task-card task-card--enhanced">
-                <div className="task-card__top">
-                  <StatusBadge tone={task.tone}>{task.status}</StatusBadge>
-                  <span className="task-card__priority">{task.priority}</span>
-                </div>
+          {filteredTasks.map((task) => {
+            const active = selectedTask?.id === task.id;
 
-                <div className="task-card__body">
-                  <h3 className="card-title">{task.title}</h3>
-                  <p className="card-description">{task.description}</p>
-                </div>
-
-                <div className="task-meta-grid">
-                  <div className="task-meta-box">
-                    <span className="task-meta-box__label">Projeto</span>
-                    <strong className="task-meta-box__value">
-                      Onboarding Corporativo
-                    </strong>
+            return (
+              <button
+                key={task.id}
+                type="button"
+                className={`unstyled-button task-select ${active ? "task-select--active" : ""}`}
+                onClick={() => setSelectedTaskId(task.id)}
+              >
+                <SurfaceCard className={`task-card task-card--enhanced ${active ? "task-card--active" : ""}`}>
+                  <div className={`tone-strip tone-strip--${task.tone}`} />
+                  <div className="task-card__top">
+                    <StatusBadge tone={task.tone}>{task.status}</StatusBadge>
+                    <span className="task-card__priority">{task.priority}</span>
                   </div>
 
-                  <div className="task-meta-box">
-                    <span className="task-meta-box__label">Responsável</span>
-                    <strong className="task-meta-box__value">{task.owner}</strong>
+                  <div className="task-card__body">
+                    <h3 className="card-title">{task.title}</h3>
+                    <p className="card-description">{task.description}</p>
                   </div>
-                </div>
-              </SurfaceCard>
-            </button>
-          ))}
+
+                  <div className="task-meta-grid">
+                    <div className="task-meta-box">
+                      <span className="task-meta-box__label">Projeto</span>
+                      <strong className="task-meta-box__value">Onboarding Corporativo</strong>
+                    </div>
+
+                    <div className="task-meta-box">
+                      <span className="task-meta-box__label">Responsável</span>
+                      <strong className="task-meta-box__value">{task.owner}</strong>
+                    </div>
+                  </div>
+                </SurfaceCard>
+              </button>
+            );
+          })}
         </div>
 
         <aside className="task-detail-panel">
           {selectedTask ? (
             <SurfaceCard className="task-detail-card">
+              <div className={`tone-strip tone-strip--${selectedTask.tone}`} />
               <div className="task-card__top">
                 <StatusBadge tone={selectedTask.tone}>{selectedTask.status}</StatusBadge>
                 <span className="task-card__priority">{selectedTask.priority}</span>
@@ -268,16 +271,14 @@ export default function TarefasPage() {
               <div className="task-detail-card__header">
                 <h2 className="section-title__title">{selectedTask.title}</h2>
                 <p className="section-title__description">
-                  Conteúdo interno da tarefa, andamento, checklist e próximos passos.
+                  Tudo o que importa para decidir o próximo passo desta tarefa.
                 </p>
               </div>
 
               <div className="task-meta-grid">
                 <div className="task-meta-box">
                   <span className="task-meta-box__label">Projeto</span>
-                  <strong className="task-meta-box__value">
-                    Onboarding Corporativo
-                  </strong>
+                  <strong className="task-meta-box__value">Onboarding Corporativo</strong>
                 </div>
 
                 <div className="task-meta-box">
@@ -351,7 +352,7 @@ export default function TarefasPage() {
               <SectionTitle
                 eyebrow="Detalhe"
                 title="Nenhuma tarefa encontrada"
-                description="Ajuste os filtros para visualizar o conteúdo interno."
+                description="Ajuste os filtros para ver o conteúdo interno."
               />
             </SurfaceCard>
           )}

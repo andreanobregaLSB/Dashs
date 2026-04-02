@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import {
   SectionHeader,
   SurfaceCard,
@@ -11,19 +11,19 @@ import { projects } from "@/lib/mock-data";
 export default function ProjetosPage() {
   return (
     <div className="page-stack">
-      <section className="page-hero">
+      <section className="page-hero page-hero--compact">
         <div>
           <p className="page-hero__eyebrow">Projetos</p>
           <h1 className="page-hero__title">Portfólio e andamento</h1>
           <p className="page-hero__description">
-            Projetos com líder, status, progresso e prioridade.
+            Cada card mostra só o que importa: responsável, prazo, progresso e risco.
           </p>
         </div>
-        <div className="page-hero__actions">
-          <button className="btn btn--secondary" type="button">
+        <div className="page-hero__actions page-hero__actions--minimal">
+          <button className="btn btn--secondary btn--sm" type="button">
             Filtrar status
           </button>
-          <button className="btn btn--primary" type="button">
+          <button className="btn btn--primary btn--sm" type="button">
             Novo projeto
           </button>
         </div>
@@ -33,11 +33,12 @@ export default function ProjetosPage() {
         <SectionHeader
           eyebrow="Carteira"
           title="Projetos ativos"
-          description="Visual executivo com foco em saúde, prazo e execução."
+          description="Leitura direta para acompanhar saúde e execução."
         />
         <div className="grid grid-2">
           {projects.map((project) => (
             <SurfaceCard key={project.id} className="project-card">
+              <div className={`tone-strip tone-strip--${project.tone}`} />
               <div className="project-card__top">
                 <div>
                   <h2 className="card-title">{project.name}</h2>
@@ -71,8 +72,8 @@ export default function ProjetosPage() {
       <SurfaceCard>
         <SectionTitle
           eyebrow="Resumo"
-          title="Padrão para expansão futura"
-          description="Depois você pode ligar estes cards a dados reais, modal e banco."
+          title="Próxima camada da experiência"
+          description="Depois podemos ligar estes cards a busca, filtros e detalhes reais."
         />
       </SurfaceCard>
     </div>

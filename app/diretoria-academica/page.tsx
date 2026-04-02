@@ -1,189 +1,443 @@
+﻿"use client";
+
+import { useMemo, useState } from "react";
 import {
   SectionHeader,
-  SectionTitle,
   SurfaceCard,
   StatusBadge,
   StatCard,
 } from "@/components/ui";
-import { academicBoardAreas, academicBoardPeople } from "@/lib/mock-data";
+import {
+  academicBoardAreas,
+  projects,
+  tasks,
+  teamMembers,
+} from "@/lib/mock-data";
 
-const topPerformers = [...academicBoardPeople]
-  .sort((a, b) => b.performance - a.performance)
-  .slice(0, 5);
+type AreaFilter = "Todas" | (typeof academicBoardAreas)[number]["name"];
+type DeliveryFilter = "Todas" | "Diretoria" | "Projetos" | "Tarefas" | "Equipe";
+type ToneFilter = "Todos" | "success" | "warning" | "danger" | "neutral";
 
-const riskAreas = academicBoardAreas.filter(
-  (area) => area.tone === "warning" || area.tone === "danger"
-);
+type GovernanceRow = {
+  id: string;
+  area: (typeof academicBoardAreas)[number]["name"];
+  delivery: Exclude<DeliveryFilter, "Todas">;
+  title: string;
+  owner: string;
+  status: string;
+  tone: Exclude<ToneFilter, "Todos">;
+  metricLabel: string;
+  metricValue: string;
+  note: string;
+};
+
+const areaOptions: AreaFilter[] = [
+  "Todas",
+  ...academicBoardAreas.map((area) => area.name),
+];
+
+const deliveryOptions: DeliveryFilter[] = [
+  "Todas",
+  "Diretoria",
+  "Projetos",
+  "Tarefas",
+  "Equipe",
+];
+
+const toneOptions: ToneFilter[] = ["Todos", "success", "warning", "danger", "neutral"];
+
+function areaForIndex(index: number) {
+  return academicBoardAreas[index % academicBoardAreas.length]?.name ?? academicBoardAreas[0].name;
+}
+
+function buildGovernanceRows(): GovernanceRow[] {
+  return [
+    ...academicBoardAreas.map((area) => ({
+      id: `area-${area.name}`,
+      area: area.name,
+      delivery: "Diretoria" as const,
+      title: area.name,
+      owner: area.lead,
+      status: area.status,
+      tone: area.tone,
+      metricLabel: "Eficiência",
+      metricValue: `${area.efficiency}%`,
+      note: `${area.deliveries} entregas • ${area.pending} pendências`,
+    })),
+    ...projects.map((project, index) => ({
+      id: `project-${project.id}`,
+      area: areaForIndex(index),
+      delivery: "Projetos" as const,
+      title: project.name,
+      owner: project.owner,
+      status: project.status,
+      tone: project.tone,
+      metricLabel: "Progresso",
+      metricValue: `${project.progress}%`,
+      note: `Prazo ${project.deadline}`,
+    })),
+    ...tasks.map((task, index) => ({
+      id: `task-${task.id}`,
+      area: areaForIndex(index + projects.length),
+      delivery: "Tarefas" as const,
+      title: task.title,
+      owner: task.owner,
+      status: task.status,
+      tone: task.tone,
+      metricLabel: "Prioridade",
+      metricValue: task.priority,
+      note: `Prazo ${task.deadline}`,
+    })),
+    ...teamMembers.map((member, index) => ({
+      id: `team-${member.name}`,
+      area: areaForIndex(index + projects.length + tasks.length),
+      delivery: "Equipe" as const,
+      title: member.name,
+      owner: member.role,
+      status: member.capacity,
+      tone: member.tone,
+      metricLabel: "Performance",
+      metricValue: `${member.performance}%`,
+      note: `${member.activeTasks} tarefas • ${member.projects} projetos`,
+    })),
+  ];
+}
+
+function getActiveCount(rows: GovernanceRow[], tone: ToneFilter) {
+  if (tone === "Todos") return rows.length;
+  return rows.filter((row) => row.tone === tone).length;
+}
 
 export default function DiretoriaAcademicaPage() {
+  const [areaFilter, setAreaFilter] = useState<AreaFilter>("Todas");
+  const [deliveryFilter, setDeliveryFilter] = useState<DeliveryFilter>("Todas");
+  const [toneFilter, setToneFilter] = useState<ToneFilter>("Todos");
+  const [selectedRowId, setSelectedRowId] = useState<string>("area-Graduação");
+
+  const governanceRows = useMemo(() => buildGovernanceRows(), []);
+
+  const filteredRows = useMemo(() => {
+    return governanceRows.filter((row) => {
+      const matchesArea = areaFilter === "Todas" || row.area === areaFilter;
+      const matchesDelivery = deliveryFilter === "Todas" || row.delivery === deliveryFilter;
+      const matchesTone = toneFilter === "Todos" || row.tone === toneFilter;
+      return matchesArea && matchesDelivery && matchesTone;
+    });
+  }, [areaFilter, deliveryFilter, toneFilter, governanceRows]);
+
+  const selectedRow =
+    filteredRows.find((row) => row.id === selectedRowId) ?? filteredRows[0] ?? null;
+
+  const selectedArea =
+    academicBoardAreas.find((area) => area.name === (selectedRow?.area ?? areaFilter)) ??
+    academicBoardAreas[0];
+
+  const totalCount = filteredRows.length;
+  const criticalCount = getActiveCount(filteredRows, "warning") + getActiveCount(filteredRows, "danger");
+  const positiveCount = getActiveCount(filteredRows, "success");
+  const areaCount = new Set(filteredRows.map((row) => row.area)).size;
+
+  const deliveryBreakdown = deliveryOptions
+    .filter((item): item is Exclude<DeliveryFilter, "Todas"> => item !== "Todas")
+    .map((delivery) => ({
+      delivery,
+      count: filteredRows.filter((row) => row.delivery === delivery).length,
+    }))
+    .filter((item) => item.count > 0);
+
+  const handleReset = () => {
+    setAreaFilter("Todas");
+    setDeliveryFilter("Todas");
+    setToneFilter("Todos");
+  };
+
+  const handleExport = () => {
+    window.print();
+  };
+
+  const handleRefresh = () => {
+    const nextRow = filteredRows[0] ?? governanceRows[0];
+    if (nextRow) {
+      setSelectedRowId(nextRow.id);
+    }
+  };
+
   return (
     <div className="page-stack">
-      <section className="academic-command">
+      <section className="academic-command academic-command--hero">
         <div className="academic-command__main">
           <p className="academic-command__eyebrow">Diretoria Acadêmica</p>
-          <h1 className="academic-command__title">
-            Mapa institucional de áreas, líderes e pressão operacional
-          </h1>
+          <h1 className="academic-command__title">Governança e entregas</h1>
           <p className="academic-command__description">
-            Uma leitura de governança para identificar onde a diretoria precisa
-            intervir, quais áreas estão performando melhor e onde há risco de
-            atraso, sobrecarga ou baixa eficiência.
+            Consolidado do site por área, entrega e situação.
           </p>
         </div>
 
         <div className="academic-command__actions">
-          <button type="button" className="btn btn--ghost btn--sm">
-            Filtrar área
+          <button type="button" className="btn btn--ghost btn--sm" onClick={handleReset}>
+            Limpar
           </button>
-          <button type="button" className="btn btn--primary btn--sm">
-            Exportar leitura
+          <button type="button" className="btn btn--primary btn--sm" onClick={handleExport}>
+            Exportar
           </button>
         </div>
       </section>
 
+      <SurfaceCard className="governance-filter-card">
+        <div className="tone-strip" />
+        <SectionHeader
+          eyebrow="Filtro rápido"
+          title="Área, entrega e situação"
+          description="Botões ativos para navegar pelo consolidado."
+        />
+
+        <div className="filters-toolbar">
+          <div className="filter-group">
+            <label className="filter-label">Área</label>
+            <div className="filter-button-row">
+              {areaOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`btn btn--sm ${areaFilter === option ? "btn--primary" : "btn--ghost"}`}
+                  onClick={() => setAreaFilter(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Entrega</label>
+            <div className="filter-button-row">
+              {deliveryOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`btn btn--sm ${deliveryFilter === option ? "btn--primary" : "btn--ghost"}`}
+                  onClick={() => setDeliveryFilter(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group">
+            <label className="filter-label">Situação</label>
+            <div className="filter-button-row">
+              {toneOptions.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`btn btn--sm ${toneFilter === option ? "btn--primary" : "btn--ghost"}`}
+                  onClick={() => setToneFilter(option)}
+                >
+                  {option === "Todos" ? "Todos" : option}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-group filter-group--actions">
+            <label className="filter-label">Ações</label>
+            <div className="report-actions report-actions--compact">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={handleRefresh}>
+                Atualizar leitura
+              </button>
+              <button type="button" className="btn btn--secondary btn--sm" onClick={handleExport}>
+                Imprimir visão
+              </button>
+              <button type="button" className="btn btn--primary btn--sm" onClick={handleReset}>
+                Limpar filtros
+              </button>
+            </div>
+          </div>
+        </div>
+      </SurfaceCard>
+
       <section className="grid grid-4">
-        <StatCard label="Áreas avaliadas" value="6" delta="visão consolidada" />
-        <StatCard label="Gestores ativos" value="12" delta="monitoramento semanal" />
-        <StatCard label="Risco institucional" value="2" delta="áreas em atenção" />
-        <StatCard label="Eficiência média" value="84%" delta="+3% no mês" />
+        <StatCard label="Entregas" value={String(totalCount)} delta="itens filtrados" />
+        <StatCard label="Áreas" value={String(areaCount)} delta="frentes ativas" />
+        <StatCard label="Em dia" value={String(positiveCount)} delta="status positivo" />
+        <StatCard label="Críticos" value={String(criticalCount)} delta="atenção direta" />
       </section>
 
       <section className="grid grid-2-1">
-        <SurfaceCard className="academic-zones-card">
+        <SurfaceCard className="governance-board-card">
+          <div className="tone-strip tone-strip--warning" />
           <SectionHeader
-            eyebrow="Mapa das áreas"
-            title="Onde a diretoria deve olhar primeiro"
-            description="Cada bloco resume saúde, volume e pressão da área."
+            eyebrow="Consolidado"
+            title="Entregas do site"
+            description="Cada linha é uma frente real do sistema."
           />
 
-          <div className="academic-zones-grid">
-            {academicBoardAreas.map((area) => (
-              <div
-                key={area.name}
-                className={`academic-zone academic-zone--${area.tone}`}
+          <div className="governance-list">
+            {filteredRows.map((row) => (
+              <button
+                key={row.id}
+                type="button"
+                className={`unstyled-button governance-row-button ${
+                  selectedRow?.id === row.id ? "governance-row-button--active" : ""
+                }`}
+                onClick={() => setSelectedRowId(row.id)}
               >
-                <div className="academic-zone__top">
-                  <div>
-                    <h3 className="card-title">{area.name}</h3>
-                    <p className="card-description">Gestor: {area.lead}</p>
+                <SurfaceCard className="governance-row-card">
+                  <div className={`tone-strip tone-strip--${row.tone}`} />
+                  <div className="governance-row-card__top">
+                    <div>
+                      <StatusBadge tone={row.tone}>{row.delivery}</StatusBadge>
+                      <h3 className="card-title">{row.title}</h3>
+                      <p className="governance-row-card__meta">
+                        Área: {row.area} • {row.owner}
+                      </p>
+                    </div>
+                    <div className="governance-row-card__metric">
+                      <strong>{row.metricValue}</strong>
+                      <span>{row.metricLabel}</span>
+                    </div>
                   </div>
-                  <StatusBadge tone={area.tone}>{area.status}</StatusBadge>
-                </div>
-
-                <div className="academic-zone__metrics">
-                  <div>
-                    <span className="academic-zone__label">Pessoas</span>
-                    <strong className="academic-zone__value">{area.people}</strong>
-                  </div>
-                  <div>
-                    <span className="academic-zone__label">Entregas</span>
-                    <strong className="academic-zone__value">{area.deliveries}</strong>
-                  </div>
-                  <div>
-                    <span className="academic-zone__label">Pendências</span>
-                    <strong className="academic-zone__value">{area.pending}</strong>
-                  </div>
-                  <div>
-                    <span className="academic-zone__label">Eficiência</span>
-                    <strong className="academic-zone__value">{area.efficiency}%</strong>
-                  </div>
-                </div>
-              </div>
+                  <p className="card-description">{row.status} • {row.note}</p>
+                </SurfaceCard>
+              </button>
             ))}
           </div>
         </SurfaceCard>
 
-        <SurfaceCard className="academic-alerts-card">
-          <SectionTitle
-            eyebrow="Áreas críticas"
-            title="Pontos de atenção imediata"
-            description="Blocos com risco ou pressão elevada."
+        <SurfaceCard className="governance-summary-card">
+          <div className={`tone-strip tone-strip--${selectedRow?.tone ?? "neutral"}`} />
+          <SectionHeader
+            eyebrow="Área selecionada"
+            title={selectedArea.name}
+            description={selectedRow ? selectedRow.title : "Sem item selecionado"}
           />
 
-          <div className="academic-alerts-list">
-            {riskAreas.map((area) => (
-              <div key={area.name} className="academic-alert-item">
-                <div>
-                  <p className="academic-alert-item__title">{area.name}</p>
-                  <p className="academic-alert-item__meta">
-                    {area.pending} pendências • {area.people} pessoas
-                  </p>
-                </div>
-                <StatusBadge tone={area.tone}>{area.status}</StatusBadge>
+          <div className="governance-summary-panel">
+            <div className="governance-summary-panel__header">
+              <div>
+                <p className="governance-summary-panel__label">Responsável</p>
+                <p className="governance-summary-panel__value">{selectedArea.lead}</p>
               </div>
-            ))}
+              <StatusBadge tone={selectedArea.tone}>{selectedArea.status}</StatusBadge>
+            </div>
+
+            <div className="task-meta-grid task-meta-grid--dense">
+              <div className="task-meta-box">
+                <span className="task-meta-box__label">Pessoas</span>
+                <strong className="task-meta-box__value">{selectedArea.people}</strong>
+              </div>
+              <div className="task-meta-box">
+                <span className="task-meta-box__label">Entregas</span>
+                <strong className="task-meta-box__value">{selectedArea.deliveries}</strong>
+              </div>
+              <div className="task-meta-box">
+                <span className="task-meta-box__label">Pendências</span>
+                <strong className="task-meta-box__value">{selectedArea.pending}</strong>
+              </div>
+              <div className="task-meta-box">
+                <span className="task-meta-box__label">Eficiência</span>
+                <strong className="task-meta-box__value">{selectedArea.efficiency}%</strong>
+              </div>
+            </div>
+
+            <div className="governance-summary-panel__header governance-summary-panel__header--subtle">
+              <div>
+                <p className="governance-summary-panel__label">Leitura filtrada</p>
+                <p className="governance-summary-panel__value">Distribuição por entrega</p>
+              </div>
+              <span className="governance-summary-panel__pill">{deliveryBreakdown.length} tipos</span>
+            </div>
+
+            <div className="governance-delivery-grid">
+              {deliveryBreakdown.map((item) => (
+                <div key={item.delivery} className="governance-delivery-card">
+                  <div>
+                    <p className="report-list__title">{item.delivery}</p>
+                    <p className="report-list__meta">{item.count} entregas filtradas</p>
+                  </div>
+                  <StatusBadge tone="neutral">{item.count}</StatusBadge>
+                </div>
+              ))}
+            </div>
           </div>
         </SurfaceCard>
       </section>
 
       <section className="grid grid-2">
-        <SurfaceCard>
+        <SurfaceCard className="governance-areas-card">
+          <div className="tone-strip tone-strip--success" />
           <SectionHeader
-            eyebrow="Ranking"
-            title="Melhor performance individual"
-            description="Leitura simples para entender quem está puxando o resultado."
+            eyebrow="Áreas acadêmicas"
+            title="Mapa institucional"
+            description="Resumo objetivo das áreas da diretoria."
           />
 
-          <div className="ranking-list">
-            {topPerformers.map((person, index) => (
-              <div key={person.name} className="ranking-item">
-                <div className="ranking-item__left">
-                  <div className="ranking-item__position">#{index + 1}</div>
-                  <div className="avatar">{person.initials}</div>
+          <div className="governance-area-grid">
+            {academicBoardAreas.map((area) => (
+              <div key={area.name} className="governance-area-card">
+                <div className="governance-area-card__top">
                   <div>
-                    <p className="ranking-item__name">{person.name}</p>
-                    <p className="ranking-item__meta">
-                      {person.area} • {person.role}
-                    </p>
+                    <h3 className="card-title">{area.name}</h3>
+                    <p className="card-description">{area.lead}</p>
                   </div>
+                  <StatusBadge tone={area.tone}>{area.status}</StatusBadge>
                 </div>
-
-                <div className="ranking-item__right">
-                  <strong className="ranking-item__score">
-                    {person.performance}%
-                  </strong>
-                  <StatusBadge tone={person.tone}>{person.capacity}</StatusBadge>
+                <div className="governance-area-card__stats">
+                  <span>{area.people} pessoas</span>
+                  <span>{area.deliveries} entregas</span>
+                  <span>{area.pending} pendências</span>
+                  <span>{area.efficiency}% eficiência</span>
                 </div>
               </div>
             ))}
           </div>
         </SurfaceCard>
 
-        <SurfaceCard>
+        <SurfaceCard className="governance-actions-card">
+          <div className="tone-strip tone-strip--danger" />
           <SectionHeader
-            eyebrow="Distribuição"
-            title="Carga e prazo por pessoa"
-            description="Visão para balanceamento entre líderes e equipes."
+            eyebrow="Ações"
+            title="Atalhos de navegação"
+            description="Entradas diretas para as frentes do site."
           />
+          <div className="report-actions">
+            <button className="btn btn--primary" type="button" onClick={handleReset}>
+              Resetar filtros
+            </button>
+            <button className="btn btn--secondary" type="button" onClick={handleExport}>
+              Imprimir visão
+            </button>
+            <button type="button" className="btn btn--ghost" onClick={handleRefresh}>
+              Atualizar leitura
+            </button>
+          </div>
 
-          <div className="people-matrix">
-            {academicBoardPeople.map((person) => (
-              <div key={person.name} className="people-matrix__row">
-                <div>
-                  <p className="people-matrix__name">{person.name}</p>
-                  <p className="people-matrix__meta">
-                    {person.area} • {person.activeTasks} tarefas
-                  </p>
-                </div>
-
-                <div className="people-matrix__stats">
-                  <span>{person.pending} pendências</span>
-                  <span>{person.onTime}% no prazo</span>
-                  <span>{person.performance}% performance</span>
-                </div>
+          <div className="report-list">
+            <div className="report-list__item">
+              <div>
+                <p className="report-list__title">Projetos</p>
+                <p className="report-list__meta">{projects.length} registros</p>
               </div>
-            ))}
+              <StatusBadge tone="neutral">Ativo</StatusBadge>
+            </div>
+            <div className="report-list__item">
+              <div>
+                <p className="report-list__title">Tarefas</p>
+                <p className="report-list__meta">{tasks.length} registros</p>
+              </div>
+              <StatusBadge tone="neutral">Ativo</StatusBadge>
+            </div>
+            <div className="report-list__item">
+              <div>
+                <p className="report-list__title">Equipe</p>
+                <p className="report-list__meta">{teamMembers.length} registros</p>
+              </div>
+              <StatusBadge tone="neutral">Ativo</StatusBadge>
+            </div>
           </div>
         </SurfaceCard>
       </section>
-
-      <SurfaceCard>
-        <SectionTitle
-          eyebrow="Leitura da diretoria"
-          title="Essa página tem foco em governança"
-          description="Aqui a leitura é institucional: áreas, pressão operacional, líderes, performance e risco acadêmico."
-        />
-      </SurfaceCard>
     </div>
   );
 }

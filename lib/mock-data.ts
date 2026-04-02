@@ -334,3 +334,32 @@ export const academicBoardPeople = [
     tone: "warning" as const,
   },
 ];
+
+export const reportHighlights = [
+  {
+    label: "Leitura do dia",
+    value: "5 pontos críticos",
+    delta: "3 pedem ação hoje",
+  },
+  {
+    label: "Projetos sob risco",
+    value: "3",
+    delta: "1 piorou desde ontem",
+  },
+  {
+    label: "Capacidade média",
+    value: "82%",
+    delta: "estável",
+  },
+  {
+    label: "Pendências abertas",
+    value: "23",
+    delta: "fila controlada",
+  },
+];
+
+export const reportTakeaways = [
+  "Priorize as entregas com prazo em até 48 horas.",
+  "Redistribua carga nas áreas com pressão acima da média.",
+  "Feche aprovações pendentes antes de abrir novas frentes.",
+];

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,7 +61,7 @@ export function Sidebar() {
             <p className="sidebar__eyebrow">Sistema</p>
             <h2 className="sidebar__title">Project Flow</h2>
             <p className="sidebar__description">
-              Operação, equipe e entrega em um só lugar.
+              Acesse a área certa para resolver a próxima pendência.
             </p>
           </div>
 
@@ -94,13 +94,9 @@ export function Sidebar() {
 
         <div className="sidebar__footer">
           <div className="sidebar__footer-card">
-            <span className="sidebar__footer-label">Espaço do time</span>
-            <strong className="sidebar__footer-value">
-              12 membros ativos no sistema
-            </strong>
-            <span className="sidebar__footer-subtitle">
-              4 entregas críticas exigindo atenção hoje.
-            </span>
+            <span className="sidebar__footer-label">Resumo rápido</span>
+            <strong className="sidebar__footer-value">12 membros ativos</strong>
+            <span className="sidebar__footer-subtitle">4 entregas críticas hoje.</span>
           </div>
         </div>
       </aside>
