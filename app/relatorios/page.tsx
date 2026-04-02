@@ -1,92 +1,81 @@
-export default function RelatoriosPage() {
-  const indicadores = [
-    { titulo: "Taxa média de conclusão", valor: "76%" },
-    { titulo: "Projetos em risco", valor: "2" },
-    { titulo: "Tarefas para hoje", valor: "12" },
-    { titulo: "Atrasos na semana", valor: "5" },
-  ];
+import {
+  SectionHeader,
+  SurfaceCard,
+  StatusBadge,
+  ProgressBar,
+  StatCard,
+} from "@/components/ui";
+import { teamMembers } from "@/lib/mock-data";
 
-  const relatorios = [
-    {
-      nome: "Performance semanal",
-      descricao: "Resumo da evolução das tarefas e entregas da semana.",
-      data: "04/04/2026",
-      responsavel: "Marcos",
-    },
-    {
-      nome: "Indicadores executivos",
-      descricao: "Painel consolidado com métricas de produtividade e andamento.",
-      data: "03/04/2026",
-      responsavel: "Ana",
-    },
-    {
-      nome: "Projetos com maior risco",
-      descricao: "Levantamento dos projetos com prazos críticos ou bloqueios.",
-      data: "02/04/2026",
-      responsavel: "Carlos",
-    },
+export default function EquipePage() {
+  const summary = [
+    { label: "Membros ativos", value: "12", delta: "+2 este mês" },
+    { label: "Capacidade alta", value: "4", delta: "atenção" },
+    { label: "Entregas da semana", value: "18", delta: "+6 concluídas" },
+    { label: "Bloqueios", value: "3", delta: "-1 desde ontem" },
   ];
 
   return (
-    <div>
-      <div className="mb-6">
-        <p className="text-sm text-slate-500">Análises</p>
-        <h1 className="text-2xl font-bold">Relatórios</h1>
-      </div>
-
-      <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {indicadores.map((item) => (
-          <div
-            key={item.titulo}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
-            <p className="text-sm text-slate-500">{item.titulo}</p>
-            <p className="mt-3 text-3xl font-bold">{item.valor}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">Relatórios recentes</h2>
-            <p className="text-sm text-slate-500">
-              Documentos e análises geradas recentemente
-            </p>
-          </div>
-
-          <button className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90">
-            Gerar relatório
+    <div className="page-stack">
+      <section className="page-hero">
+        <div>
+          <p className="page-hero__eyebrow">Equipe</p>
+          <h1 className="page-hero__title">Responsáveis, carga e performance</h1>
+          <p className="page-hero__description">
+            Um mapa visual para acompanhar distribuição e capacidade.
+          </p>
+        </div>
+        <div className="page-hero__actions">
+          <button className="btn btn--secondary" type="button">
+            Ver capacidade
+          </button>
+          <button className="btn btn--primary" type="button">
+            Adicionar membro
           </button>
         </div>
+      </section>
 
-        <div className="grid gap-4">
-          {relatorios.map((relatorio) => (
-            <div
-              key={relatorio.nome}
-              className="rounded-2xl border border-slate-200 p-4"
-            >
-              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                <div>
-                  <h3 className="font-semibold">{relatorio.nome}</h3>
-                  <p className="mt-1 text-sm text-slate-600">
-                    {relatorio.descricao}
-                  </p>
-                </div>
+      <section className="grid grid-4">
+        {summary.map((item) => (
+          <StatCard
+            key={item.label}
+            label={item.label}
+            value={item.value}
+            delta={item.delta}
+          />
+        ))}
+      </section>
 
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                    Data: {relatorio.data}
-                  </span>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                    Responsável: {relatorio.responsavel}
-                  </span>
+      <section className="section-block">
+        <SectionHeader
+          eyebrow="Mapa da equipe"
+          title="Pessoas em foco"
+          description="Capacidade, tarefas ativas e eficiência por responsável."
+        />
+        <div className="grid grid-2">
+          {teamMembers.map((member) => (
+            <SurfaceCard key={member.name} className="member-card">
+              <div className="member-card__top">
+                <div className="member-card__identity">
+                  <div className="avatar avatar--lg">{member.initials}</div>
+                  <div>
+                    <h2 className="card-title">{member.name}</h2>
+                    <p className="card-description">{member.role}</p>
+                  </div>
                 </div>
+                <StatusBadge tone={member.tone}>{member.capacity}</StatusBadge>
               </div>
-            </div>
+
+              <div className="member-card__meta">
+                <span>{member.activeTasks} tarefas ativas</span>
+                <span>{member.projects} projetos</span>
+              </div>
+
+              <ProgressBar value={member.performance} />
+            </SurfaceCard>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }

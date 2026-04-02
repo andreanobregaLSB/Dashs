@@ -1,241 +1,198 @@
-export default function Home() {
-  const stats = [
-    { label: "Projetos ativos", value: "8", detail: "+2 este mês" },
-    { label: "Tarefas pendentes", value: "23", detail: "7 com prazo hoje" },
-    { label: "Atrasadas", value: "5", detail: "precisam de atenção" },
-    { label: "Concluídas", value: "41", detail: "últimos 30 dias" },
-  ];
+import Link from "next/link";
+import {
+  SectionHeader,
+  StatCard,
+  SurfaceCard,
+  StatusBadge,
+  ProgressBar,
+  SectionTitle,
+} from "@/components/ui";
+import {
+  alerts,
+  executiveMetrics,
+  recentActivity,
+  workAreas,
+  projects,
+  teamMembers,
+} from "@/lib/mock-data";
 
-  const projetos = [
-    {
-      nome: "Onboarding Corporate",
-      status: "Em andamento",
-      progresso: "72%",
-      responsavel: "Ana",
-    },
-    {
-      nome: "Portal Financeiro",
-      status: "Planejamento",
-      progresso: "18%",
-      responsavel: "Carlos",
-    },
-    {
-      nome: "Automação Comercial",
-      status: "Em revisão",
-      progresso: "89%",
-      responsavel: "Julia",
-    },
-  ];
-
-  const prioridades = [
-    "Revisar fluxo de cadastro",
-    "Validar permissões de acesso",
-    "Definir dashboard executivo",
-    "Ajustar status das tarefas",
-  ];
-
-  const atividades = [
-    "Ana atualizou o projeto Onboarding Corporate",
-    "Carlos criou 3 tarefas no Portal Financeiro",
-    "Julia concluiu a etapa de validação",
-    "Novo comentário em Automação Comercial",
-  ];
-
-  const menu = [
-    "Dashboard",
-    "Projetos",
-    "Tarefas",
-    "Equipe",
-    "Relatórios",
-  ];
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="flex min-h-screen">
-        <aside className="hidden w-72 flex-col border-r border-slate-200 bg-white lg:flex">
-          <div className="border-b border-slate-200 px-6 py-6">
-            <p className="text-sm font-medium text-slate-500">Sistema</p>
-            <h2 className="mt-1 text-2xl font-bold">Project Flow</h2>
-            <p className="mt-2 text-sm text-slate-500">
-              Gestão simples e rápida
-            </p>
+    <div className="page-stack">
+      <section className="hero-panel">
+        <div className="hero-panel__content">
+          <div className="hero-panel__eyebrow">Central operacional</div>
+          <h1 className="hero-panel__title">
+            Visualize prioridades, responsáveis e entregas em um só lugar.
+          </h1>
+          <p className="hero-panel__description">
+            Uma visão executiva e operacional para acompanhar projetos, tarefas,
+            equipe e decisões com rapidez.
+          </p>
+
+          <div className="hero-panel__actions">
+            <Link href="/tarefas" className="btn btn--primary">
+              Abrir tarefas
+            </Link>
+            <Link href="/projetos" className="btn btn--secondary">
+              Ver projetos
+            </Link>
           </div>
-
-          <nav className="flex-1 px-4 py-6">
-            <div className="space-y-2">
-              {menu.map((item, index) => (
-                <a
-                  key={item}
-                  href="#"
-                  className={`block rounded-xl px-4 py-3 text-sm font-medium transition ${
-                    index === 0
-                      ? "bg-slate-900 text-white"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-                >
-                  {item}
-                </a>
-              ))}
-            </div>
-          </nav>
-
-          <div className="border-t border-slate-200 p-4">
-            <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-900">
-                Espaço do time
-              </p>
-              <p className="mt-1 text-sm text-slate-500">
-                12 membros ativos no sistema
-              </p>
-            </div>
-          </div>
-        </aside>
-
-        <div className="flex flex-1 flex-col">
-          <header className="border-b border-slate-200 bg-white">
-            <div className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="text-sm text-slate-500">Visão geral</p>
-                <h1 className="text-2xl font-bold">Dashboard</h1>
-              </div>
-
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <input
-                  type="text"
-                  placeholder="Buscar projeto ou tarefa"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none placeholder:text-slate-400 focus:border-slate-400 sm:w-72"
-                />
-                <button className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90">
-                  Novo projeto
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <main className="flex-1 p-6">
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {stats.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-                  <p className="text-sm text-slate-500">{item.label}</p>
-                  <p className="mt-3 text-3xl font-bold">{item.value}</p>
-                  <p className="mt-2 text-sm text-slate-500">{item.detail}</p>
-                </div>
-              ))}
-            </section>
-
-            <section className="mt-6 grid gap-6 xl:grid-cols-[2fr_1fr]">
-              <div className="space-y-6">
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div>
-                      <h2 className="text-lg font-semibold">
-                        Projetos em andamento
-                      </h2>
-                      <p className="text-sm text-slate-500">
-                        Resumo rápido do que está ativo
-                      </p>
-                    </div>
-                    <button className="text-sm font-medium text-slate-600 hover:text-slate-900">
-                      Ver todos
-                    </button>
-                  </div>
-
-                  <div className="grid gap-4">
-                    {projetos.map((projeto) => (
-                      <div
-                        key={projeto.nome}
-                        className="rounded-2xl border border-slate-200 p-4"
-                      >
-                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                          <div>
-                            <h3 className="font-semibold">{projeto.nome}</h3>
-                            <p className="text-sm text-slate-500">
-                              Responsável: {projeto.responsavel}
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                              {projeto.status}
-                            </span>
-                            <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">
-                              {projeto.progresso}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-lg font-semibold">Prioridades da semana</h2>
-                  <p className="mb-5 text-sm text-slate-500">
-                    Itens que merecem foco primeiro
-                  </p>
-
-                  <div className="space-y-3">
-                    {prioridades.map((item, index) => (
-                      <div
-                        key={item}
-                        className="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3"
-                      >
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-                          {index + 1}
-                        </div>
-                        <p className="text-sm font-medium text-slate-700">
-                          {item}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-lg font-semibold">Atividade recente</h2>
-                  <p className="mb-5 text-sm text-slate-500">
-                    Últimas movimentações
-                  </p>
-
-                  <div className="space-y-4">
-                    {atividades.map((item) => (
-                      <div
-                        key={item}
-                        className="rounded-xl border border-slate-200 p-4"
-                      >
-                        <p className="text-sm text-slate-700">{item}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-lg font-semibold">Resumo rápido</h2>
-                  <div className="mt-4 space-y-4 text-sm text-slate-600">
-                    <div className="flex items-center justify-between">
-                      <span>Taxa média de conclusão</span>
-                      <strong className="text-slate-900">76%</strong>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Equipe online agora</span>
-                      <strong className="text-slate-900">9</strong>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Tarefas para hoje</span>
-                      <strong className="text-slate-900">12</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </main>
         </div>
-      </div>
+
+        <div className="hero-panel__summary">
+          <SurfaceCard>
+            <SectionTitle
+              eyebrow="Resumo do momento"
+              title="Panorama do sistema"
+              description="Leitura rápida do que exige atenção agora."
+            />
+            <div className="mini-grid">
+              {executiveMetrics.slice(0, 4).map((item) => (
+                <div key={item.label} className="mini-metric">
+                  <span className="mini-metric__label">{item.label}</span>
+                  <strong className="mini-metric__value">{item.value}</strong>
+                  <span className="mini-metric__delta">{item.delta}</span>
+                </div>
+              ))}
+            </div>
+          </SurfaceCard>
+        </div>
+      </section>
+
+      <section className="section-block">
+        <SectionHeader
+          eyebrow="Radar do dia"
+          title="Alertas e pontos de decisão"
+          description="Tudo o que está perto do prazo, com risco ou esperando ação."
+          action={
+            <Link href="/relatorios" className="btn btn--ghost">
+              Ver análise
+            </Link>
+          }
+        />
+        <div className="grid grid-4">
+          {alerts.map((alert) => (
+            <SurfaceCard key={alert.title} className="alert-card">
+              <div className="alert-card__top">
+                <StatusBadge tone={alert.tone}>{alert.status}</StatusBadge>
+                <span className="alert-card__count">{alert.count}</span>
+              </div>
+              <h3 className="card-title">{alert.title}</h3>
+              <p className="card-description">{alert.description}</p>
+            </SurfaceCard>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-block">
+        <SectionHeader
+          eyebrow="Mapa do trabalho"
+          title="Áreas principais do sistema"
+          description="Módulos clicáveis para navegar pela operação."
+        />
+        <div className="grid grid-4">
+          {workAreas.map((area) => (
+            <Link key={area.href} href={area.href} className="tile-link">
+              <SurfaceCard className="tile-card">
+                <div className="tile-card__icon">{area.icon}</div>
+                <h3 className="card-title">{area.title}</h3>
+                <p className="card-description">{area.description}</p>
+                <span className="tile-card__meta">{area.meta}</span>
+              </SurfaceCard>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid grid-2-1">
+        <SurfaceCard>
+          <SectionTitle
+            eyebrow="Painel vivo"
+            title="Atividade recente"
+            description="Últimas movimentações do time e dos projetos."
+          />
+          <div className="activity-list">
+            {recentActivity.map((item) => (
+              <div key={item.id} className="activity-item">
+                <div className="activity-item__dot" />
+                <div>
+                  <p className="activity-item__title">{item.title}</p>
+                  <p className="activity-item__meta">
+                    {item.user} • {item.time}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </SurfaceCard>
+
+        <SurfaceCard>
+          <SectionTitle
+            eyebrow="Linha de decisão"
+            title="Indicadores rápidos"
+            description="Sinais para tomada de decisão imediata."
+          />
+          <div className="decision-list">
+            {executiveMetrics.slice(4).map((item) => (
+              <StatCard
+                key={item.label}
+                label={item.label}
+                value={item.value}
+                delta={item.delta}
+              />
+            ))}
+          </div>
+        </SurfaceCard>
+      </section>
+
+      <section className="grid grid-2">
+        <SurfaceCard>
+          <SectionTitle
+            eyebrow="Projetos em destaque"
+            title="Saúde dos projetos"
+            description="Status, progresso e líder responsável."
+          />
+          <div className="project-list">
+            {projects.slice(0, 3).map((project) => (
+              <div key={project.id} className="project-row">
+                <div className="project-row__header">
+                  <div>
+                    <h3 className="project-row__title">{project.name}</h3>
+                    <p className="project-row__meta">
+                      Líder: {project.owner} • Prazo: {project.deadline}
+                    </p>
+                  </div>
+                  <StatusBadge tone={project.tone}>{project.status}</StatusBadge>
+                </div>
+                <ProgressBar value={project.progress} />
+              </div>
+            ))}
+          </div>
+        </SurfaceCard>
+
+        <SurfaceCard>
+          <SectionTitle
+            eyebrow="Equipe"
+            title="Responsáveis com maior carga"
+            description="Quem está puxando as entregas mais críticas."
+          />
+          <div className="team-list">
+            {teamMembers.slice(0, 4).map((member) => (
+              <div key={member.name} className="team-item">
+                <div className="avatar">{member.initials}</div>
+                <div>
+                  <h3 className="team-item__name">{member.name}</h3>
+                  <p className="team-item__meta">
+                    {member.role} • {member.activeTasks} tarefas ativas
+                  </p>
+                </div>
+                <StatusBadge tone={member.tone}>{member.capacity}</StatusBadge>
+              </div>
+            ))}
+          </div>
+        </SurfaceCard>
+      </section>
     </div>
   );
 }

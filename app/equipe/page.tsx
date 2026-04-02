@@ -1,90 +1,81 @@
+import {
+  SectionHeader,
+  SurfaceCard,
+  StatusBadge,
+  ProgressBar,
+  StatCard,
+} from "@/components/ui";
+import { teamMembers } from "@/lib/mock-data";
+
 export default function EquipePage() {
-  const equipe = [
-    {
-      nome: "Ana Souza",
-      cargo: "Product Owner",
-      projetos: 3,
-      tarefas: 12,
-      status: "Online",
-    },
-    {
-      nome: "Carlos Lima",
-      cargo: "Desenvolvedor",
-      projetos: 2,
-      tarefas: 9,
-      status: "Em reunião",
-    },
-    {
-      nome: "Julia Rocha",
-      cargo: "UX/UI Designer",
-      projetos: 4,
-      tarefas: 7,
-      status: "Online",
-    },
-    {
-      nome: "Marcos Silva",
-      cargo: "Analista de Dados",
-      projetos: 2,
-      tarefas: 6,
-      status: "Offline",
-    },
+  const summary = [
+    { label: "Membros ativos", value: "12", delta: "+2 este mês" },
+    { label: "Capacidade alta", value: "4", delta: "atenção" },
+    { label: "Entregas da semana", value: "18", delta: "+6 concluídas" },
+    { label: "Bloqueios", value: "3", delta: "-1 desde ontem" },
   ];
 
   return (
-    <div>
-      <div className="mb-6">
-        <p className="text-sm text-slate-500">Pessoas</p>
-        <h1 className="text-2xl font-bold">Equipe</h1>
-      </div>
-
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Membros ativos</p>
-          <p className="mt-3 text-3xl font-bold">12</p>
+    <div className="page-stack">
+      <section className="page-hero">
+        <div>
+          <p className="page-hero__eyebrow">Equipe</p>
+          <h1 className="page-hero__title">Responsáveis, carga e performance</h1>
+          <p className="page-hero__description">
+            Um mapa visual para acompanhar distribuição e capacidade.
+          </p>
         </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Online agora</p>
-          <p className="mt-3 text-3xl font-bold">9</p>
+        <div className="page-hero__actions">
+          <button className="btn btn--secondary" type="button">
+            Ver capacidade
+          </button>
+          <button className="btn btn--primary" type="button">
+            Adicionar membro
+          </button>
         </div>
+      </section>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Carga média</p>
-          <p className="mt-3 text-3xl font-bold">8 tarefas</p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
-        {equipe.map((membro) => (
-          <div
-            key={membro.nome}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold">{membro.nome}</h2>
-                <p className="mt-1 text-sm text-slate-500">{membro.cargo}</p>
-              </div>
-
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                {membro.status}
-              </span>
-            </div>
-
-            <div className="mt-5 grid grid-cols-2 gap-4">
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Projetos ativos</p>
-                <p className="mt-2 text-2xl font-bold">{membro.projetos}</p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Tarefas abertas</p>
-                <p className="mt-2 text-2xl font-bold">{membro.tarefas}</p>
-              </div>
-            </div>
-          </div>
+      <section className="grid grid-4">
+        {summary.map((item) => (
+          <StatCard
+            key={item.label}
+            label={item.label}
+            value={item.value}
+            delta={item.delta}
+          />
         ))}
-      </div>
+      </section>
+
+      <section className="section-block">
+        <SectionHeader
+          eyebrow="Mapa da equipe"
+          title="Pessoas em foco"
+          description="Capacidade, tarefas ativas e eficiência por responsável."
+        />
+        <div className="grid grid-2">
+          {teamMembers.map((member) => (
+            <SurfaceCard key={member.name} className="member-card">
+              <div className="member-card__top">
+                <div className="member-card__identity">
+                  <div className="avatar avatar--lg">{member.initials}</div>
+                  <div>
+                    <h2 className="card-title">{member.name}</h2>
+                    <p className="card-description">{member.role}</p>
+                  </div>
+                </div>
+                <StatusBadge tone={member.tone}>{member.capacity}</StatusBadge>
+              </div>
+
+              <div className="member-card__meta">
+                <span>{member.activeTasks} tarefas ativas</span>
+                <span>{member.projects} projetos</span>
+              </div>
+
+              <ProgressBar value={member.performance} />
+            </SurfaceCard>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
